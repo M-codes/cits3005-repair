@@ -1,5 +1,6 @@
 from owlready2 import *
 import json
+#comment about this code
 
 def sanitize_uri(text):
     return text.replace(" ", "_")
