@@ -1,6 +1,6 @@
 from owlready2 import *
 import json
-#comment about this code
+#comment about this code regarding the ontology.
 
 def sanitize_uri(text):
     return text.replace(" ", "_")
