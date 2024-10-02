@@ -2,12 +2,14 @@ from owlready2 import *
 import json
 #comment about this code regarding the ontology.
 
+step_count = 0
+
 def sanitize_uri(text):
     return text.replace(" ", "_")
 
 # Load the JSON data line by line, treating each line as a separate JSON object
 response_json = []
-with open('Skills.json', 'r') as file:
+with open('Vehicle.json', 'r') as file:
     for line in file:
         try:
             response_json.append(json.loads(line))  # Load each line as a JSON object
@@ -29,7 +31,16 @@ with onto:
     # Define properties
     class has_tool(ObjectProperty): pass
     class has_step(ObjectProperty): pass
+    class part_of(Item >> Item, TransitiveProperty): pass
     class has_image(ObjectProperty): pass
+    class issubProcedure(Procedure >> Procedure, TransitiveProperty): pass
+        
+
+# Dictionary to store procedure instances
+procedure_instances = {}
+
+# Store step information for each procedure to compare later
+procedure_steps = {}
 
 # Iterate over each procedure in the loaded JSON data
 for data in response_json:
@@ -40,6 +51,10 @@ for data in response_json:
 
     # Create a Procedure instance
     procedure = Procedure(sanitize_uri(f"Procedure_{data['Guidid']}"))  # Ensuring unique IRI by prefixing "Procedure_"
+
+     # Store the procedure instance and steps
+    procedure_instances[data['Guidid']] = procedure
+    steps_list = []
 
     # Set properties for the procedure
     procedure.title = data['Title']
@@ -67,6 +82,10 @@ for data in response_json:
             step.text_raw = step_data['Text_raw']
             step.order = step_data['Order']
 
+            steps_list.append(step_data['StepId'])
+
+            step_count += 1
+
             # Create Image instances for each image associated with the step
             if 'Images' in step_data:
                 for image_url in step_data['Images']:
@@ -78,6 +97,14 @@ for data in response_json:
 
             # Link the step to the procedure
             procedure.has_step.append(step)
+    
+    procedure_steps[data['Guidid']] = set(steps_list)
+
+for guid1, steps1 in procedure_steps.items():
+    for guid2, steps2 in procedure_steps.items():
+        if guid1 != guid2 and steps1.issubset(steps2):
+            # If steps1 is a subset of steps2, guid1 is a sub-procedure of guid2
+            procedure_instances[guid1].issubProcedure.append(procedure_instances[guid2])
 
 # Save the ontology to an OWL file
 try:
@@ -85,5 +112,7 @@ try:
     print("Ontology saved as ifixit_ontology.owl")
 except Exception as e:
     print(f"Error saving ontology: {e}")
+
+print(f"number of steps: {step_count}")
 
 
