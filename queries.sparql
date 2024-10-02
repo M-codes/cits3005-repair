@@ -17,3 +17,11 @@ SELECT ?item (COUNT(?procedure) AS ?procedureCount) WHERE {
 } GROUP BY ?item
 HAVING (COUNT(?procedure) > 10)
 
+SELECT DISTINCT ?procedure ?tool
+WHERE {
+    ?procedure ex:has_tool ?tool .
+    ?procedure ex:has_step ?step .
+    FILTER NOT EXISTS {
+        ?step ex:has_tool ?tool .
+    }
+}

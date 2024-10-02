@@ -12,7 +12,7 @@ with open('Vehicle.json', 'r') as file:
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON: {e}")
 for lines in response_json:
-    print(f"This is toolbox: {lines['Category']}")
+    print(f"This is toolbox: {lines['Steps']}")
     for data in lines['Steps']:
         #print(f"this is tools: {data['Tools_extracted']}")
         steps.append(data['StepId'])
