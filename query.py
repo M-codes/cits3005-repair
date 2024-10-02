@@ -9,7 +9,7 @@ def sanitize_uri(text):
 
 # Load the JSON data line by line, treating each line as a separate JSON object
 response_json = []
-with open('Vehicle.json', 'r') as file:
+with open('Skills.json', 'r') as file:
     for line in file:
         try:
             response_json.append(json.loads(line))  # Load each line as a JSON object
@@ -29,6 +29,7 @@ with onto:
     class Image(Thing): pass  # Define the Image class
 
     # Define properties
+    class has_procedure(ObjectProperty): pass
     class has_tool(ObjectProperty): pass
     class has_step(ObjectProperty): pass
     class part_of(Item >> Item, TransitiveProperty): pass
@@ -48,9 +49,11 @@ for data in response_json:
     if 'Guidid' not in data or 'Title' not in data:
         print(f"Skipping entry with missing 'Guidid' or 'Title': {data}")
         continue
-
+    
+    item = Item(sanitize_uri(data['Category']))
     # Create a Procedure instance
     procedure = Procedure(sanitize_uri(f"Procedure_{data['Guidid']}"))  # Ensuring unique IRI by prefixing "Procedure_"
+    item.has_procedure.append(procedure)
 
      # Store the procedure instance and steps
     procedure_instances[data['Guidid']] = procedure
@@ -61,6 +64,8 @@ for data in response_json:
     procedure.category = data['Category']
     procedure.url = data['Url']
 
+    #dictionary for all tools in toolbox
+    tools_in_procedure = {}
     # Create Tool instances and link to the procedure
     if 'Toolbox' in data:
         for tool in data['Toolbox']:
@@ -69,6 +74,8 @@ for data in response_json:
                 continue
             tool_instance = Tool(sanitize_uri(f"Tool_{tool['Name']}"))  # Ensure unique IRI
             tool_instance.url = tool['Url']
+            # Store tool in a dictionary for easy access when linking to steps
+            tools_in_procedure[tool['Name']] = tool_instance
             # Link tools to the procedure
             procedure.has_tool.append(tool_instance)
 
@@ -81,6 +88,18 @@ for data in response_json:
             step = Step(sanitize_uri(f"Step_{step_data['StepId']}"))  # Ensure unique IRI
             step.text_raw = step_data['Text_raw']
             step.order = step_data['Order']
+
+            # Check if "tools_extracted" exists and if tools are in the procedure's toolbox
+            if 'Tools_extracted' in step_data:
+                
+                for extracted_tool in step_data['Tools_extracted']:
+                    
+                    if extracted_tool in tools_in_procedure:
+                        # Link the tool to the step
+                        step.has_tool.append(tools_in_procedure[extracted_tool])
+                        
+                    else:
+                        print(f"Tool '{extracted_tool}' extracted in step not found in procedure toolbox.")
 
             steps_list.append(step_data['StepId'])
 
