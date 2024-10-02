@@ -9,7 +9,7 @@ def sanitize_uri(text):
 
 # Load the JSON data line by line, treating each line as a separate JSON object
 response_json = []
-with open('Skills.json', 'r') as file:
+with open('Vehicle.json', 'r') as file:
     for line in file:
         try:
             response_json.append(json.loads(line))  # Load each line as a JSON object
@@ -43,6 +43,10 @@ procedure_instances = {}
 # Store step information for each procedure to compare later
 procedure_steps = {}
 
+# Dictionary to store the item categories and their instances
+item_instances = {}
+item_categories = {}
+
 # Iterate over each procedure in the loaded JSON data
 for data in response_json:
     # Check if necessary keys exist
@@ -50,7 +54,14 @@ for data in response_json:
         print(f"Skipping entry with missing 'Guidid' or 'Title': {data}")
         continue
     
+    # Split the category string into an array (e.g., by spaces or another delimiter)
+    category_array = data['Category'].split()  # Adjust the split method as needed
     item = Item(sanitize_uri(data['Category']))
+
+    # Store the item instance and its category array for later comparison
+    item_instances[data['Category']] = item
+    item_categories[data['Category']] = set(category_array)
+
     # Create a Procedure instance
     procedure = Procedure(sanitize_uri(f"Procedure_{data['Guidid']}"))  # Ensuring unique IRI by prefixing "Procedure_"
     item.has_procedure.append(procedure)
@@ -118,6 +129,12 @@ for data in response_json:
             procedure.has_step.append(step)
     
     procedure_steps[data['Guidid']] = set(steps_list)
+
+for category1, cat_array1 in item_categories.items():
+    for category2, cat_array2 in item_categories.items():
+        if category1 != category2 and cat_array1.issubset(cat_array2):
+            # If category1 is a subset of category2, link the items with the part_of property
+            item_instances[category2].part_of.append(item_instances[category1])
 
 for guid1, steps1 in procedure_steps.items():
     for guid2, steps2 in procedure_steps.items():
