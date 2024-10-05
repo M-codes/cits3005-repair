@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Information</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script>
+        function searchProcedures() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const tableRows = document.querySelectorAll('#procedureTable tbody tr');
+
+            tableRows.forEach(row => {
+                const procedureName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                if (procedureName.includes(input)) {
+                    row.style.display = ''; // Show the row
+                } else {
+                    row.style.display = 'none'; // Hide the row
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Items in the Ontology</h1>
+        
+        <!-- Search Bar -->
+        <div class="mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search Procedures..." onkeyup="searchProcedures()">
+        </div>
+
+        <table class="table" id="procedureTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Related Procedures</th>
+                    <th>Part Of</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>
+                        <ul>
+                            {% for procedure in item.has_procedure %}
+                            <li>
+                                <a href="{{ url_for('procedure_detail', procedure_title=procedure.has_title[0]) }}">
+                                    {{ procedure.has_title[0] }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            {% for part in item.part_of %}
+                            <li>{{ part }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

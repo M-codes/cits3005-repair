@@ -27,6 +27,7 @@ with onto:
     class Tool(Item): pass
     class Part(Item): pass
     class Image(Thing): pass  # Define the Image class
+    
 
     # Define properties
     class has_procedure(ObjectProperty): pass
@@ -35,6 +36,8 @@ with onto:
     class part_of(Item >> Item, TransitiveProperty): pass
     class has_image(ObjectProperty): pass
     class issubProcedure(Procedure >> Procedure, TransitiveProperty): pass
+    class has_title(DataProperty): pass
+    class has_order(DataProperty): pass
         
 
 # Dictionary to store procedure instances
@@ -71,7 +74,7 @@ for data in response_json:
     steps_list = []
 
     # Set properties for the procedure
-    procedure.title = data['Title']
+    procedure.has_title.append(data['Title'])
     procedure.category = data['Category']
     procedure.url = data['Url']
 
@@ -97,8 +100,8 @@ for data in response_json:
                 print(f"Skipping step with missing 'StepId': {step_data}")
                 continue
             step = Step(sanitize_uri(f"Step_{step_data['StepId']}"))  # Ensure unique IRI
-            step.text_raw = step_data['Text_raw']
-            step.order = step_data['Order']
+            step.has_title.append(step_data['Text_raw'])
+            step.has_order.append(step_data['Order'])
 
             # Check if "tools_extracted" exists and if tools are in the procedure's toolbox
             if 'Tools_extracted' in step_data:

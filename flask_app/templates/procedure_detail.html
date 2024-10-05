@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ procedure.has_title[0] }}</title> <!-- Use the first title in the has_title list -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ procedure.has_title[0] }}</h1> <!-- Display the title of the procedure -->
+
+        {% if procedure.issubProcedure %}
+        <h3>Subprocedure of:</h3>
+        <ul>
+            {% for procedure in procedure.issubProcedure %}
+                <li>{{procedure.has_title}}</li> <!-- Display each tool's title -->
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <h3>Tools Required:</h3>
+        <ul>
+            {% for tool in procedure.has_tool %}
+                <li>{{tool}}</li> <!-- Display each tool's title -->
+            {% endfor %}
+        </ul>
+
+        <h3>Steps:</h3>
+        <ol>
+            {% for step in procedure.has_step %}
+                <li>
+                    <strong>{{ step.has_title[0] }} </strong> <!-- Display step title and order -->
+                    {% if step.has_images %}
+                        <h4>Images:</h4>
+                        <ul>
+                            {% for image in step.has_image %}
+                                <li>
+                                    <img src="{{ image }}" alt="{{ step.has_title[0] }} Image" style="max-width: 200px;"/> <!-- Display each image -->
+                                    <p>URL: <a href="{{ image }}">{{ image }}</a></p> <!-- Show the image URL -->
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ol>
+
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Items</a> <!-- Button to go back to the index -->
+    </div>
+</body>
+</html>
