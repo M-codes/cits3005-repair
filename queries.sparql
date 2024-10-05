@@ -25,3 +25,10 @@ WHERE {
         ?step ex:has_tool ?tool .
     }
 }
+
+SELECT ?step ?title
+WHERE {
+    ?step rdf:type ex:Step .
+    ?step ex:has_title ?title .
+    FILTER(REGEX(?title, "careful|dangerous|Careful|Dangerous|CAREFUL|DANGEROUS", "i"))  # 'i' for case-insensitive matching
+}
