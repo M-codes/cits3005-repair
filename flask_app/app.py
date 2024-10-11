@@ -2,7 +2,7 @@ from flask import Flask, render_template, abort
 from owlready2 import *
 
 # Load the ontology
-onto = get_ontology("ifixit_ontology.owl").load()
+onto = get_ontology("repair_ontology.owl").load()
 
 app = Flask(__name__)
 
