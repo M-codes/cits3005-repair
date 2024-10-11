@@ -1,6 +1,39 @@
 from owlready2 import *
 import json
-#comment about this code regarding the ontology.
+
+# Create the ontology
+onto = get_ontology("http://example.org/repair_ontology.owl")
+
+with onto:
+    # Define classes
+    class Item(Thing): pass
+    class Procedure(Thing): pass
+    class Step(Thing): pass
+    class Tool(Item): pass
+    class Part(Item): pass
+    class Image(Thing): pass  
+    
+    # Define properties
+    class has_procedure(ObjectProperty): pass
+    class has_tool(ObjectProperty): pass
+    class has_step(ObjectProperty): pass
+    class part_of(Item >> Item, TransitiveProperty): pass
+    class has_image(ObjectProperty): pass
+    class issubProcedure(Procedure >> Procedure, TransitiveProperty): pass
+    class has_title(DataProperty): pass
+    class has_order(DataProperty): pass
+
+    # Constraint: Each step must use tools from the procedure's toolbox
+    class Step(Thing):
+        equivalent_to = [
+            Thing & has_tool.only(Tool) & has_tool.some(has_tool.some(Tool))
+        ]
+
+    # Fix: Use Or() for union instead of | operator
+    class Procedure(Thing):
+        equivalent_to = [
+            Thing & (issubProcedure.only(has_procedure.some(Or([part_of, Item]))))
+        ]
 
 step_count = 0
 
@@ -15,30 +48,6 @@ with open('Vehicle.json', 'r') as file:
             response_json.append(json.loads(line))  # Load each line as a JSON object
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON: {e}")
-
-# Create the ontology
-onto = get_ontology("http://example.org/ifixit.owl")
-
-with onto:
-    # Define classes
-    class Item(Thing): pass
-    class Procedure(Thing): pass
-    class Step(Thing): pass
-    class Tool(Item): pass
-    class Part(Item): pass
-    class Image(Thing): pass  # Define the Image class
-    
-
-    # Define properties
-    class has_procedure(ObjectProperty): pass
-    class has_tool(ObjectProperty): pass
-    class has_step(ObjectProperty): pass
-    class part_of(Item >> Item, TransitiveProperty): pass
-    class has_image(ObjectProperty): pass
-    class issubProcedure(Procedure >> Procedure, TransitiveProperty): pass
-    class has_title(DataProperty): pass
-    class has_order(DataProperty): pass
-        
 
 # Dictionary to store procedure instances
 procedure_instances = {}
@@ -69,7 +78,7 @@ for data in response_json:
     procedure = Procedure(sanitize_uri(f"Procedure_{data['Guidid']}"))  # Ensuring unique IRI by prefixing "Procedure_"
     item.has_procedure.append(procedure)
 
-     # Store the procedure instance and steps
+    # Store the procedure instance and steps
     procedure_instances[data['Guidid']] = procedure
     steps_list = []
 
@@ -78,7 +87,7 @@ for data in response_json:
     procedure.category = data['Category']
     procedure.url = data['Url']
 
-    #dictionary for all tools in toolbox
+    # Dictionary for all tools in toolbox
     tools_in_procedure = {}
     # Create Tool instances and link to the procedure
     if 'Toolbox' in data:
@@ -146,12 +155,7 @@ for guid1, steps1 in procedure_steps.items():
             procedure_instances[guid1].issubProcedure.append(procedure_instances[guid2])
 
 # Save the ontology to an OWL file
-try:
-    onto.save(file="ifixit_ontology.owl", format="rdfxml")
-    print("Ontology saved as ifixit_ontology.owl")
-except Exception as e:
-    print(f"Error saving ontology: {e}")
 
-print(f"number of steps: {step_count}")
-
+onto.save(file="repair_ontology.owl", format="rdfxml")
+print("Ontology saved as repair_ontology.owl")
 
