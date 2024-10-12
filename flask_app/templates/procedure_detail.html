@@ -3,19 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ procedure.has_title[0] }}</title> <!-- Use the first title in the has_title list -->
+    <title>{{ procedure.has_title[0] }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Enable smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Make the step navigation sticky */
+        .step-navigation {
+            position: -webkit-sticky; /* For Safari */
+            position: sticky;
+            top: 0;
+            background-color: white;
+            padding: 10px;
+            z-index: 1000;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>{{ procedure.has_title[0] }}</h1> <!-- Display the title of the procedure -->
+        <h1>{{ procedure.has_title[0] }}</h1>
 
         {% if procedure.issubProcedure %}
         <h3>Subprocedure of:</h3>
         <ul>
             {% for parent_procedure in procedure.issubProcedure %}
-                <li>{{parent_procedure.has_title[0]}}</li> <!-- Display each parent procedure's title -->
+                <li>{{ parent_procedure.has_title[0] }}</li>
             {% endfor %}
         </ul>
         {% endif %}
@@ -23,23 +40,31 @@
         <h3>Tools Required:</h3>
         <ul>
             {% for tool in procedure.has_tool %}
-                <li>{{tool | replace('repair_ontology.', '')}}</li> <!-- Display each tool's title -->
+                <li>{{ tool | replace('repair_ontology.', '') }}</li>
             {% endfor %}
         </ul>
+
+        <!-- Sticky Step Navigation -->
+        <h3>Jump to Step:</h3>
+        <div class="step-navigation mb-3">
+            {% for step in procedure.has_step %}
+                <a href="#step-{{ loop.index }}" class="btn btn-outline-secondary">{{ loop.index }}</a>
+            {% endfor %}
+        </div>
 
         <h3>Steps:</h3>
         <ol>
             {% for step in procedure.has_step %}
-                <li>
-                    <strong>{{ step.has_title[0] }}</strong> <!-- Display step title -->
+                <li id="step-{{ loop.index }}">
+                    <strong>{{ step.has_title[0] }}</strong>
 
                     {% if step.has_image %}
                         <h4>Images:</h4>
                         <ul>
                             {% for image in step.has_image %}
                                 <li>
-                                    <img src="{{ image | replace('repair_ontology.', '')}}" alt="{{ step.has_title[0] }} Image" style="max-width: 200px;"/> <!-- Display the image -->
-                                    <p>URL: <a href="{{ image}}">{{ image | replace('repair_ontology.', '')}}</a></p> <!-- Show the image URL -->
+                                    <img src="{{ image | replace('repair_ontology.', '') }}" alt="{{ step.has_title[0] }} Image" style="max-width: 200px;"/>
+                                    <p>URL: <a href="{{ image }}">{{ image | replace('repair_ontology.', '') }}</a></p>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -48,7 +73,7 @@
             {% endfor %}
         </ol>
 
-        <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Items</a> <!-- Button to go back to the index -->
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Items</a>
     </div>
 </body>
 </html>

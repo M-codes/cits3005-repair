@@ -10,9 +10,23 @@ h1{
     text-align: center;
 }
 
+.fixed-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030; /* Ensure it stays on top */
+}
+.step-navigation {
+    background-color: #f8f9fa; /* Light background */
+    padding: 10px;
+    border-bottom: 1px solid #ddd; /* Optional border */
+}
+
+
 .container {
     max-width: 800px;
-    margin: 50px auto;
+    margin-top: 50px; /* Space below the fixed navigation to avoid overlap */
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
