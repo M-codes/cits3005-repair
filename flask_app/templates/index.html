@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item Information</title>
+    <!-- Link to Bootstrap CSS for additional styling -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Link to custom stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styless.css') }}">
     <script>
         function searchProcedures() {
             const input = document.getElementById('searchInput').value.toLowerCase();
@@ -19,17 +22,72 @@
                 }
             });
         }
+    
+        function filterByLetter(letter) {
+            const tableRows = document.querySelectorAll('#procedureTable tbody tr');
+            tableRows.forEach(row => {
+                const itemName = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                if (itemName.startsWith(letter.toLowerCase())) {
+                    row.style.display = ''; // Show the row
+                } else {
+                    row.style.display = 'none'; // Hide the row
+                }
+            });
+        }
+
+        function filterByProcedureCount(range) {
+            const tableRows = document.querySelectorAll('#procedureTable tbody tr');
+            tableRows.forEach(row => {
+                const procedureCount = row.querySelectorAll('td:nth-child(2) ul li').length;
+
+                let showRow = false;
+
+                if (range === '0-5' && procedureCount <= 5) {
+                    showRow = true;
+                } else if (range === '5-10' && procedureCount > 5 && procedureCount < 10) {
+                    showRow = true;
+                } else if (range === '10+' && procedureCount >= 10) {
+                    showRow = true;
+                }
+
+                row.style.display = showRow ? '' : 'none'; // Show or hide the row
+            });
+        }
+
+        
     </script>
 </head>
 <body>
     <div class="container">
         <h1 class="mt-5">Items in the Ontology</h1>
         
-        <!-- Search Bar -->
+         <!-- Alphabet Filter -->
+         <div class="mb-3">
+            <strong>Filter by Alphabet:</strong>
+            <div class="btn-group">
+                {% for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' %}
+                    <button class="btn btn-outline-primary" onclick="filterByLetter('{{ letter }}')">{{ letter }}</button>
+                {% endfor %}
+                <button class="btn btn-outline-secondary" onclick="filterByLetter('')">Show All</button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <strong>Filter by Number of Procedures:</strong>
+            <div class="btn-group">
+                <button class="btn btn-outline-primary" onclick="filterByProcedureCount('0-5')">0 to 5</button>
+                <button class="btn btn-outline-primary" onclick="filterByProcedureCount('5-10')">5 to 10</button>
+                <button class="btn btn-outline-primary" onclick="filterByProcedureCount('10+')">10+</button>
+                
+            </div>
+        </div>
+
+        <!-- Search Bar for Filtering Procedures -->
         <div class="mb-3">
             <input type="text" id="searchInput" class="form-control" placeholder="Search Procedures..." onkeyup="searchProcedures()">
         </div>
 
+        <!-- Table to Display Items and Related Information -->
         <table class="table" id="procedureTable">
             <thead>
                 <tr>
@@ -65,5 +123,10 @@
             </tbody>
         </table>
     </div>
+    
+    <!-- Link to Bootstrap JS for functionality (optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

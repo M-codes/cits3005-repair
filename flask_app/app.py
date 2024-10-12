@@ -6,6 +6,7 @@ onto = get_ontology("repair_ontology.owl").load()
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     items_info = []
