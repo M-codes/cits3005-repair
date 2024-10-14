@@ -15,13 +15,15 @@
 
             tableRows.forEach(row => {
                 const procedureName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                if (procedureName.includes(input)) {
+                const toolList = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); // Example tool filter
+                if (procedureName.includes(input) || toolList.includes(input)) {
                     row.style.display = ''; // Show the row
                 } else {
                     row.style.display = 'none'; // Hide the row
                 }
             });
         }
+
     
         function filterByLetter(letter) {
             const tableRows = document.querySelectorAll('#procedureTable tbody tr');
