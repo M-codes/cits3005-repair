@@ -54,11 +54,68 @@
                 row.style.display = showRow ? '' : 'none'; // Show or hide the row
             });
         }
+        
+        function addStep() {
+        const stepContainer = document.getElementById('stepContainer');
+        const newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.className = 'form-control mt-2';
+        newInput.name = 'step_titles';
+        newInput.placeholder = 'Enter step title';
+        stepContainer.appendChild(newInput);
+    }
+
+    function addTool() {
+        const toolContainer = document.getElementById('toolContainer');
+        const newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.className = 'form-control mt-2';
+        newInput.name = 'tool_titles';
+        newInput.placeholder = 'Enter tool title';
+        toolContainer.appendChild(newInput);
+    }
     </script>
 </head>
 <body>
     <div class="container">
         <h1 class="mt-5">Items in the Ontology</h1>
+
+        <!-- Add this above the table -->
+<div class="container mb-5">
+    <h3>Add a Procedure to an Item</h3>
+    <form action="{{ url_for('add_procedure') }}" method="post">
+        <div class="form-group">
+            <label for="itemSelect">Select Item:</label>
+            <select class="form-control" id="itemSelect" name="item_name" required>
+                {% for item in items %}
+                <option value="{{ item.name }}">{{ item.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="procedureTitle">Procedure Title:</label>
+            <input type="text" class="form-control" id="procedureTitle" name="procedure_title" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="stepTitles">Step Titles:</label>
+            <div id="stepContainer">
+                <input type="text" class="form-control" name="step_titles" placeholder="Enter step title" required>
+            </div>
+            <button type="button" class="btn btn-secondary mt-2" onclick="addStep()">➕ Add Another Step</button>
+        </div>
+        
+        <div class="form-group">
+            <label for="toolTitles">Tool Titles:</label>
+            <div id="toolContainer">
+                <input type="text" class="form-control" name="tool_titles" placeholder="Enter tool title" required>
+            </div>
+            <button type="button" class="btn btn-secondary mt-2" onclick="addTool()">➕ Add Another Tool</button>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Procedure</button>
+        
+    </form>
+</div>
 
         <!-- Alphabet Filter -->
         <div class="mb-3">
@@ -84,6 +141,9 @@
         <div class="mb-3">
             <input type="text" id="searchInput" class="form-control" placeholder="Search Procedures..." onkeyup="searchProcedures()">
         </div>
+
+        
+
 
         <!-- Table to Display Items and Related Information -->
         <table class="table" id="procedureTable">
