@@ -95,6 +95,26 @@ def add_procedure():
 
     return redirect(url_for('index'))
 
+@app.route('/remove_procedure', methods=['POST'])
+def remove_procedure():
+    item_name = request.form.get('item_name')
+    procedure_title = request.form.get('procedure_title')
+    
+    # Find the item instance
+    item = next((i for i in onto.Item.instances() if i.name == item_name), None)
+    
+    if item:
+        # Find the procedure instance
+        procedure = next((p for p in item.has_procedure if p.has_title and p.has_title[0] == procedure_title), None)
+        
+        if procedure:
+            # Remove the procedure from the item
+            item.has_procedure.remove(procedure)
+            
+            # Save the changes to the ontology
+            onto.save(file="repair_ontology.owl", format="rdfxml")
+    
+    return redirect(url_for('index'))
 
 
 
