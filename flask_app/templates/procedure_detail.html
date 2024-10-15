@@ -29,13 +29,17 @@
         <h1>{{ procedure.has_title[0] }}</h1>
 
         {% if procedure.issubProcedure %}
-        <h3>Subprocedure of:</h3>
-        <ul>
-            {% for parent_procedure in procedure.issubProcedure %}
-                <li>{{ parent_procedure.has_title[0] }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+    <h3>Subprocedure of:</h3>
+    <ul>
+        {% for parent_procedure in procedure.issubProcedure %}
+            <li>
+                <a href="{{ url_for('procedure_detail', procedure_title=parent_procedure.has_title[0]) }}">
+                    {{ parent_procedure.has_title[0] }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
         <h3>Tools Required:</h3>
         <ul>
