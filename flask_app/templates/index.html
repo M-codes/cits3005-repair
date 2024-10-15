@@ -15,14 +15,15 @@
 
             tableRows.forEach(row => {
                 const procedureName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                if (procedureName.includes(input)) {
+                const toolList = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); // Example tool filter
+                if (procedureName.includes(input) || toolList.includes(input)) {
                     row.style.display = ''; // Show the row
                 } else {
                     row.style.display = 'none'; // Hide the row
                 }
             });
         }
-    
+
         function filterByLetter(letter) {
             const tableRows = document.querySelectorAll('#procedureTable tbody tr');
             tableRows.forEach(row => {
@@ -53,16 +54,14 @@
                 row.style.display = showRow ? '' : 'none'; // Show or hide the row
             });
         }
-
-        
     </script>
 </head>
 <body>
     <div class="container">
         <h1 class="mt-5">Items in the Ontology</h1>
-        
-         <!-- Alphabet Filter -->
-         <div class="mb-3">
+
+        <!-- Alphabet Filter -->
+        <div class="mb-3">
             <strong>Filter by Alphabet:</strong>
             <div class="btn-group">
                 {% for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' %}
@@ -78,7 +77,6 @@
                 <button class="btn btn-outline-primary" onclick="filterByProcedureCount('0-5')">0 to 5</button>
                 <button class="btn btn-outline-primary" onclick="filterByProcedureCount('5-10')">5 to 10</button>
                 <button class="btn btn-outline-primary" onclick="filterByProcedureCount('10+')">10+</button>
-                
             </div>
         </div>
 
@@ -119,11 +117,27 @@
                         </ul>
                     </td>
                 </tr>
+
+                <!-- Display any errors associated with the item -->
+                {% if item.errors %}
+                <tr>
+                    <td colspan="3">
+                        <div class="alert alert-warning" role="alert">
+                            <strong>Warnings:</strong>
+                            <ul>
+                                {% for error in item.errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    
+
     <!-- Link to Bootstrap JS for functionality (optional) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

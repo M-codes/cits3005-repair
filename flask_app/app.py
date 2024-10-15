@@ -1,11 +1,14 @@
 from flask import Flask, render_template, abort
 from owlready2 import *
 
-# Load the ontology
+# Load the ontology and enable reasoning
 onto = get_ontology("repair_ontology.owl").load()
 
-app = Flask(__name__)
+# Run reasoning to compute inferred classes and relations
+with onto:
+    sync_reasoner()
 
+app = Flask(__name__)
 
 @app.route('/')
 def index():
@@ -16,12 +19,22 @@ def index():
         if not isinstance(item, onto.Tool) and not isinstance(item, onto.Part):
             item_data = {
                 "name": item.name,
-                "has_procedure": [procedure for procedure in item.has_procedure],  # Changed here
-                "part_of": [part.name for part in item.part_of] if item.part_of else []
+                "has_procedure": [procedure for procedure in item.has_procedure],
+                "part_of": [part.name for part in item.part_of] if item.part_of else [],
+                "errors": []  # To track any errors found
             }
+
+            # Error: Check if procedure is missing steps or tools
+            for procedure in item_data['has_procedure']:
+                if not procedure.has_step:
+                    item_data['errors'].append(f"Procedure '{procedure.has_title[0]}' has no steps.")
+                if not procedure.has_tool:
+                    item_data['errors'].append(f"Procedure '{procedure.has_title[0]}' has no tools.")
+
             items_info.append(item_data)
 
     return render_template('index.html', items=items_info)
+
 
 @app.route('/procedure/<string:procedure_title>')
 def procedure_detail(procedure_title):
