@@ -27,9 +27,9 @@ def index():
             # Error: Check if procedure is missing steps or tools
             for procedure in item_data['has_procedure']:
                 if not procedure.has_step:
-                    item_data['errors'].append(f"{procedure} has no steps.")
+                    item_data['errors'].append(f"Procedure '{procedure.has_title[0]}' has no steps.")
                 if not procedure.has_tool:
-                    item_data['errors'].append(f"{procedure} has no tools.")
+                    item_data['errors'].append(f"Procedure '{procedure.has_title[0]}' has no tools.")
 
             items_info.append(item_data)
 
