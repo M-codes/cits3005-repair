@@ -74,6 +74,37 @@
             newInput.placeholder = 'Enter tool title';
             toolContainer.appendChild(newInput);
         }
+
+        function alertItemsWithoutProcedures() {
+        const tableRows = document.querySelectorAll('#procedureTable tbody tr');
+
+        tableRows.forEach(row => {
+            const procedureList = row.querySelectorAll('td:nth-child(2) ul li');
+
+            // If the procedure list is empty, display a warning message
+            if (procedureList.length === 0) {
+                const warningRow = document.createElement('tr');
+                const warningCell = document.createElement('td');
+                warningCell.colSpan = 3;
+                warningCell.innerHTML = `
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Warning:</strong> This item does not have any associated procedures.
+                    </div>
+                `;
+                warningRow.appendChild(warningCell);
+
+                // Insert the warning row after the current item row
+                row.parentNode.insertBefore(warningRow, row.nextSibling);
+            }
+        });
+    }
+
+    // Call the function when the page is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        alertItemsWithoutProcedures();
+    });
+        
+
     </script>
 </head>
 <body>
@@ -140,6 +171,8 @@
         <div class="mb-3">
             <input type="text" id="searchInput" class="form-control" placeholder="Search Procedures..." onkeyup="searchProcedures()">
         </div>
+
+        
 
         <!-- Table to Display Items and Related Information -->
         <table class="table" id="procedureTable">
