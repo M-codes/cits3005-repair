@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ procedure.has_title[0] }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Edit {{ procedure.has_title[0] }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Enable smooth scrolling */
@@ -26,58 +25,46 @@
 </head>
 <body>
     <div class="container">
-        <h1>{{ procedure.has_title[0] }}</h1>
+        <h1>Edit Procedure: {{ procedure.has_title[0] }}</h1>
 
-        {% if procedure.issubProcedure %}
-    <h3>Subprocedure of:</h3>
-    <ul>
-        {% for parent_procedure in procedure.issubProcedure %}
-            <li>
-                <a href="{{ url_for('procedure_detail', procedure_title=parent_procedure.has_title[0]) }}">
-                    {{ parent_procedure.has_title[0] }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
-        <h3>Tools Required:</h3>
-        <ul>
-            {% for tool in procedure.has_tool %}
-                <li>{{ tool | replace('repair_ontology.', '') }}</li>
-            {% endfor %}
-        </ul>
-
-        <!-- Sticky Step Navigation -->
-        <h3>Jump to Step:</h3>
-        <div class="step-navigation mb-3">
-            {% for step in procedure.has_step %}
-                <a href="#step-{{ loop.index }}" class="btn btn-outline-secondary">{{ loop.index }}</a>
-            {% endfor %}
-        </div>
-
-        <h3>Steps:</h3>
-        <ol>
-            {% for step in procedure.has_step %}
-                <li id="step-{{ loop.index }}">
-                    <strong>{{ step.has_title[0] }}</strong>
-
-                    {% if step.has_image %}
-                        <h4>Images:</h4>
-                        <ul>
-                            {% for image in step.has_image %}
-                                <li>
-                                    <img src="{{ image | replace('repair_ontology.', '') }}" alt="{{ step.has_title[0] }} Image" style="max-width: 200px;"/>
-                                    <p>URL: <a href="{{ image }}">{{ image | replace('repair_ontology.', '') }}</a></p>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
+        <!-- Editing Tools Section -->
+        <h3>Edit Tools:</h3>
+        <form action="{{ url_for('edit_tools', procedure_title=procedure.has_title[0]) }}" method="POST">
+            <ul>
+                {% for tool in procedure.has_tool %}
+                <li>
+                    <input type="text" name="tool_titles" value="{{ tool | replace('repair_ontology.', '') }}" class="form-control">
+                    <button type="submit" name="action" value="delete_tool" class="btn btn-danger btn-sm mt-2">Remove</button>
                 </li>
-            {% endfor %}
-        </ol>
+                {% endfor %}
+            </ul>
+            <button type="submit" name="action" value="update_tools" class="btn btn-primary">Update Tools</button>
+        </form>
 
-        <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Items</a>
+        <!-- Editing Steps Section -->
+        <h3>Edit Steps:</h3>
+        <form action="{{ url_for('edit_steps', procedure_title=procedure.has_title[0]) }}" method="POST">
+            <ol>
+                {% for step in procedure.has_step %}
+                <li>
+                    <input type="text" name="step_titles" value="{{ step.has_title[0] }}" class="form-control">
+                    <h4>Images:</h4>
+                    <ul>
+                        {% for image in step.has_image %}
+                        <li>
+                            <input type="text" name="step_images" value="{{ image | replace('repair_ontology.', '') }}" class="form-control">
+                            <button type="submit" name="action" value="delete_image" class="btn btn-danger btn-sm mt-2">Remove</button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <button type="submit" name="action" value="delete_step" class="btn btn-danger btn-sm mt-2">Remove Step</button>
+                </li>
+                {% endfor %}
+            </ol>
+            <button type="submit" name="action" value="update_steps" class="btn btn-primary">Update Steps</button>
+        </form>
+
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Items</a>
     </div>
 </body>
 </html>
