@@ -49,8 +49,8 @@ def add_procedure():
         procedure.has_title.append(procedure_title)
 
     for i, step_title in enumerate(step_titles):
-        step_title = step_title.strip()  # Remove any extra whitespace
-        if step_title:  # Check if the title is not empty
+        step_title = step_title.strip()
+        if step_title:
             existing_step = next((s for s in onto.Step.instances() if s.has_title and s.has_title[0] == step_title), None)
             if existing_step is None:
                 step = onto.Step(sanitize_uri(f"Step_{step_title}"))
@@ -95,6 +95,94 @@ def remove_procedure():
             onto.save(file="repair_ontology.owl", format="rdfxml")
 
     return redirect(url_for('index'))
+
+# Route for deleting a tool from a procedure
+@app.route('/delete_tool', methods=['POST'])
+def delete_tool():
+    procedure_title = request.form.get('procedure_title')
+    tool_name = request.form.get('tool_name')
+
+    procedure = next((p for p in onto.Procedure.instances() if procedure_title in p.has_title), None)
+    tool = next((t for t in procedure.has_tool if tool_name == t.name), None)
+
+    if procedure and tool:
+        procedure.has_tool.remove(tool)
+        onto.save(file="repair_ontology.owl", format="rdfxml")
+
+    return redirect(url_for('procedure_detail', procedure_title=procedure_title))
+
+# Route for adding a tool to a procedure
+@app.route('/add_tool', methods=['POST'])
+def add_tool():
+    procedure_title = request.form.get('procedure_title')
+    new_tool = request.form.get('new_tool')
+
+    procedure = next((p for p in onto.Procedure.instances() if procedure_title in p.has_title), None)
+
+    if procedure and new_tool:
+        tool = onto.Tool(sanitize_uri(f"Tool_{new_tool}"))
+        tool.has_title.append(new_tool)
+        procedure.has_tool.append(tool)
+        onto.save(file="repair_ontology.owl", format="rdfxml")
+
+    return redirect(url_for('procedure_detail', procedure_title=procedure_title))
+
+# Route for deleting a step from a procedure
+@app.route('/delete_step', methods=['POST'])
+def delete_step():
+    procedure_title = request.form.get('procedure_title')
+    step_title = request.form.get('step_title')
+
+    procedure = next((p for p in onto.Procedure.instances() if procedure_title in p.has_title), None)
+    step = next((s for s in procedure.has_step if step_title in s.has_title), None)
+
+    if procedure and step:
+        procedure.has_step.remove(step)
+        onto.save(file="repair_ontology.owl", format="rdfxml")
+
+    return redirect(url_for('procedure_detail', procedure_title=procedure_title))
+
+# Route for adding a step to a procedure
+@app.route('/add_step', methods=['POST'])
+def add_step():
+    procedure_title = request.form.get('procedure_title')
+    new_step = request.form.get('new_step')
+    new_images = request.form.get('new_images').split(',')
+
+    procedure = next((p for p in onto.Procedure.instances() if procedure_title in p.has_title), None)
+
+    if procedure and new_step:
+        step = onto.Step(sanitize_uri(f"Step_{new_step}"))
+        step.has_title.append(new_step)
+
+        # Add images to the step if provided
+        for image_url in new_images:
+            image_url = image_url.strip()
+            if image_url:
+                image_instance = onto.Image(image_url)
+                step.has_image.append(image_instance)
+
+        procedure.has_step.append(step)
+        onto.save(file="repair_ontology.owl", format="rdfxml")
+
+    return redirect(url_for('procedure_detail', procedure_title=procedure_title))
+
+# Route for deleting an image from a step
+@app.route('/delete_image', methods=['POST'])
+def delete_image():
+    procedure_title = request.form.get('procedure_title')
+    image_url = request.form.get('image_url')
+
+    procedure = next((p for p in onto.Procedure.instances() if procedure_title in p.has_title), None)
+    step = next((s for s in procedure.has_step if any(image for image in s.has_image if image == image_url)), None)
+    image_instance = next((img for img in step.has_image if img == image_url), None)
+
+    if step and image_instance:
+        step.has_image.remove(image_instance)
+        onto.save(file="repair_ontology.owl", format="rdfxml")
+
+    return redirect(url_for('procedure_detail', procedure_title=procedure_title))
+
 
 
 
