@@ -1,0 +1,28 @@
+<!-- templates/add_procedure.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Procedure</title>
+</head>
+<body>
+    <h1>Add a New Procedure</h1>
+    <form method="POST" action="{{ url_for('add_procedure') }}">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.title.label }}<br>
+            {{ form.title(size=32) }}
+        </div>
+        <div>
+            {{ form.description.label }}<br>
+            {{ form.description(rows=4, cols=50) }}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+    <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html> -->

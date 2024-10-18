@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ procedure.has_title[0] }}</title>
+    <title>Edit {{ procedure.has_title[0] }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Enable smooth scrolling */
         html {
@@ -28,22 +27,24 @@
     <div class="container">
         <h1>{{ procedure.has_title[0] }}</h1>
 
-        {% if procedure.issubProcedure %}
-        <h3>Subprocedure of:</h3>
-        <ul>
-            {% for parent_procedure in procedure.issubProcedure %}
-                <li>{{ parent_procedure.has_title[0] }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
+         {% if procedure.issubProcedure %}
+    <h3>Subprocedure of:</h3>
+    <ul>
+        {% for parent_procedure in procedure.issubProcedure %}
+            <li>
+                <a href="{{ url_for('procedure_detail', procedure_title=parent_procedure.has_title[0]) }}">
+                    {{ parent_procedure.has_title[0] }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
         <h3>Tools Required:</h3>
         <ul>
             {% for tool in procedure.has_tool %}
                 <li>{{ tool | replace('repair_ontology.', '') }}</li>
             {% endfor %}
         </ul>
-
         <!-- Sticky Step Navigation -->
         <h3>Jump to Step:</h3>
         <div class="step-navigation mb-3">
@@ -51,13 +52,11 @@
                 <a href="#step-{{ loop.index }}" class="btn btn-outline-secondary">{{ loop.index }}</a>
             {% endfor %}
         </div>
-
         <h3>Steps:</h3>
         <ol>
             {% for step in procedure.has_step %}
                 <li id="step-{{ loop.index }}">
                     <strong>{{ step.has_title[0] }}</strong>
-
                     {% if step.has_image %}
                         <h4>Images:</h4>
                         <ul>
@@ -70,8 +69,9 @@
                         </ul>
                     {% endif %}
                 </li>
-            {% endfor %}
-        </ol>
+                {% endfor %}
+            </ol>
+            
 
         <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Items</a>
     </div>

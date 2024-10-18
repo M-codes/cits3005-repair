@@ -7,7 +7,7 @@
     <!-- Link to Bootstrap CSS for additional styling -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Link to custom stylesheet -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='styless.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='indexstyle.css') }}">
     <script>
         function searchProcedures() {
             const input = document.getElementById('searchInput').value.toLowerCase();
@@ -54,11 +54,99 @@
                 row.style.display = showRow ? '' : 'none'; // Show or hide the row
             });
         }
+
+        function addStep() {
+            const stepContainer = document.getElementById('stepContainer');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.className = 'form-control mt-2';
+            newInput.name = 'step_titles';
+            newInput.placeholder = 'Enter step title';
+            stepContainer.appendChild(newInput);
+        }
+
+        function addTool() {
+            const toolContainer = document.getElementById('toolContainer');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.className = 'form-control mt-2';
+            newInput.name = 'tool_titles';
+            newInput.placeholder = 'Enter tool title';
+            toolContainer.appendChild(newInput);
+        }
+
+        function alertItemsWithoutProcedures() {
+        const tableRows = document.querySelectorAll('#procedureTable tbody tr');
+
+        tableRows.forEach(row => {
+            const procedureList = row.querySelectorAll('td:nth-child(2) ul li');
+
+            // If the procedure list is empty, display a warning message
+            if (procedureList.length === 0) {
+                const warningRow = document.createElement('tr');
+                const warningCell = document.createElement('td');
+                warningCell.colSpan = 3;
+                warningCell.innerHTML = `
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Warning:</strong> This item does not have any associated procedures.
+                    </div>
+                `;
+                warningRow.appendChild(warningCell);
+
+                // Insert the warning row after the current item row
+                row.parentNode.insertBefore(warningRow, row.nextSibling);
+            }
+        });
+    }
+
+    // Call the function when the page is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        alertItemsWithoutProcedures();
+    });
+        
+
     </script>
 </head>
 <body>
     <div class="container">
         <h1 class="mt-5">Items in the Ontology</h1>
+
+        <!-- Add this above the table -->
+        <div class="container mb-5">
+            <h3>Add a Procedure to an Item</h3>
+            <form action="{{ url_for('add_procedure') }}" method="post">
+                <div class="form-group">
+                    <label for="itemSelect">Select Item:</label>
+                    <select class="form-control" id="itemSelect" name="item_name" required>
+                        {% for item in items %}
+                        <option value="{{ item.name }}">{{ item.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="procedureTitle">Procedure Title:</label>
+                    <input type="text" class="form-control" id="procedureTitle" name="procedure_title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="stepTitles">Step Titles:</label>
+                    <div id="stepContainer">
+                        <input type="text" class="form-control" name="step_titles" placeholder="Enter step title" required>
+                        <input type="text" class="form-control mt-2" name="step_images" placeholder="Enter comma-separated image URLs">
+                    </div>
+                    <button type="button" class="btn btn-secondary mt-2" onclick="addStep()">➕ Add Another Step</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="toolTitles">Tool Titles:</label>
+                    <div id="toolContainer">
+                        <input type="text" class="form-control" name="tool_titles" placeholder="Enter tool title" required>
+                    </div>
+                    <button type="button" class="btn btn-secondary mt-2" onclick="addTool()">➕ Add Another Tool</button>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Procedure</button>
+            </form>
+        </div>
 
         <!-- Alphabet Filter -->
         <div class="mb-3">
@@ -85,6 +173,8 @@
             <input type="text" id="searchInput" class="form-control" placeholder="Search Procedures..." onkeyup="searchProcedures()">
         </div>
 
+        
+
         <!-- Table to Display Items and Related Information -->
         <table class="table" id="procedureTable">
             <thead>
@@ -105,6 +195,16 @@
                                 <a href="{{ url_for('procedure_detail', procedure_title=procedure.has_title[0]) }}">
                                     {{ procedure.has_title[0] }}
                                 </a>
+                                <!-- Add a button to remove the procedure, wrapped in a div for consistent alignment -->
+                                <form action="{{ url_for('remove_procedure') }}" method="post" style="display:inline;">
+                                    <input type="hidden" name="item_name" value="{{ item.name }}">
+                                    <input type="hidden" name="procedure_title" value="{{ procedure.has_title[0] }}">
+                                    <div style="display: flex; justify-content: center; width: 100px;">
+                                        <button type="submit" class="btn btn-danger btn-sm" style="padding: 2px 5px; font-size: 0.8rem;">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </form>
                             </li>
                             {% endfor %}
                         </ul>
@@ -137,10 +237,5 @@
             </tbody>
         </table>
     </div>
-
-    <!-- Link to Bootstrap JS for functionality (optional) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
