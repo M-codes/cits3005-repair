@@ -97,6 +97,7 @@ def remove_procedure():
     return redirect(url_for('index'))
 
 
+
 def sanitize_uri(text):
     return text.replace(" ", "_")
 
