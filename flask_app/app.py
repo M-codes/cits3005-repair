@@ -48,9 +48,9 @@ def add_procedure():
         procedure = onto.Procedure(sanitize_uri(f"Procedure_{procedure_title}"))
         procedure.has_title.append(procedure_title)
 
-    for i, step_title in enumerate(step_titles):
-        step_title = step_title.strip()
-        if step_title:
+    for step_title in step_titles:
+        step_title = step_title.strip()  # Remove any extra whitespace
+        if step_title:  # Check if the title is not empty
             existing_step = next((s for s in onto.Step.instances() if s.has_title and s.has_title[0] == step_title), None)
             if existing_step is None:
                 step = onto.Step(sanitize_uri(f"Step_{step_title}"))
