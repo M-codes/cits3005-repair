@@ -11,9 +11,6 @@ h1{
 }
 
 
-
-
-
 .fixed-top {
     position: fixed;
     top: 0;
@@ -42,7 +39,7 @@ ul {
     padding: 0;
 }
 
-/* Button styles */
+
 .btn-primary {
     display: inline-block;
     padding: 1px 1px;
