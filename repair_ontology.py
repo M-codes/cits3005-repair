@@ -1,11 +1,16 @@
+# student 1 : Michael Hii Rong Mee (23237074)
+# student 2 : Rishwanth Katherapalle (23463452)
+
 from owlready2 import *
 import json
 
-# Create the ontology
+
+# Create the ontology - Michael & Rishwanth
 onto = get_ontology("http://example.org/repair_ontology.owl")
 
+
 with onto:
-    # Define classes
+    # Define classes - Michael & Rishwanth
     class Item(Thing): pass
     class Procedure(Thing): pass
     class Step(Thing): pass
@@ -13,7 +18,7 @@ with onto:
     class Part(Item): pass
     class Image(Thing): pass  
     
-    # Define properties
+    # Define properties - Michael & Rishwanth
     class has_procedure(ObjectProperty): pass
     class has_tool(ObjectProperty): pass
     class has_step(ObjectProperty): pass
@@ -23,13 +28,13 @@ with onto:
     class has_title(DataProperty): pass
     class has_order(DataProperty): pass
 
-    # Constraint: Each step must use tools from the procedure's toolbox
+    # Constraint: Each step must use tools from the procedure's toolbox - Rishwanth
     class Step(Thing):
         equivalent_to = [
             Thing & has_tool.only(Tool) & has_tool.some(has_tool.some(Tool))
         ]
 
-    # Fix: Use Or() for union instead of | operator
+    # Fix: Use Or() for union instead of | operator - Rishwanth
     class Procedure(Thing):
         equivalent_to = [
             Thing & (issubProcedure.only(has_procedure.some(Or([part_of, Item]))))
@@ -40,17 +45,18 @@ step_count = 0
 def sanitize_uri(text):
     return text.replace(" ", "_")
 
-# Load the JSON data line by line, treating each line as a separate JSON object
+# Load the JSON data line by line, treating each line as a separate JSON object - Michael & Rishwanth
 response_json = []
 with open('Vehicle.json', 'r') as file:
     for line in file:
         try:
-            response_json.append(json.loads(line))  # Load each line as a JSON object
+            response_json.append(json.loads(line))  # Load each line as a JSON object 
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON: {e}")
 
+# Michael made the dictionary to store instances
 # Dictionary to store procedure instances
-procedure_instances = {}
+procedure_instances = {} 
 
 # Store step information for each procedure to compare later
 procedure_steps = {}
@@ -59,6 +65,8 @@ procedure_steps = {}
 item_instances = {}
 item_categories = {}
 
+
+# Rishwanth and Michael discussed to make the iteration to store all the class instances 
 # Iterate over each procedure in the loaded JSON data
 for data in response_json:
     # Check if necessary keys exist
@@ -142,6 +150,8 @@ for data in response_json:
     
     procedure_steps[data['Guidid']] = set(steps_list)
 
+
+# Michael made these to store part_of and issubProcedure instances. 
 for category1, cat_array1 in item_categories.items():
     for category2, cat_array2 in item_categories.items():
         if category1 != category2 and cat_array1.issubset(cat_array2):

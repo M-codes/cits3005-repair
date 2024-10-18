@@ -1,3 +1,6 @@
+ <!-- student 1 : Michael Hii Rong Mee (23237074)
+ student 2 : Rishwanth Katherapalle (23463452) -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,7 +47,7 @@
             {% for tool in procedure.has_tool %}
                 <li>
                     {{ tool | replace('repair_ontology.', '') }}
-                    <!-- Add delete tool button -->
+                    <!-- Add delete tool button - Rishwanth-->
                     <form action="{{ url_for('delete_tool') }}" method="post" style="display:inline;">
                         <input type="hidden" name="procedure_title" value="{{ procedure.has_title[0] }}">
                         <input type="hidden" name="tool_name" value="{{ tool | replace('repair_ontology.', '') }}">
@@ -56,7 +59,7 @@
             {% endfor %}
         </ul>
 
-        <!-- Add new tool form -->
+        <!-- Add new tool form -Rishwanth -->
         <form action="{{ url_for('add_tool') }}" method="post">
             <input type="hidden" name="procedure_title" value="{{ procedure.has_title[0] }}">
             <div class="form-group">
@@ -66,7 +69,7 @@
             <button type="submit" class="btn btn-primary">Add Tool</button>
         </form>
 
-        <!-- Sticky Step Navigation -->
+        <!-- Sticky Step Navigation -Michael -->
         <h3>Jump to Step:</h3>
         <div class="step-navigation mb-3">
             {% for step in procedure.has_step %}
@@ -74,20 +77,20 @@
             {% endfor %}
         </div>
 
-        <!-- Steps Section -->
+        <!-- Steps Section -Michael-->
         <h3>Steps:</h3>
         <ol>
             {% for step in procedure.has_step %}
                 <li id="step-{{ loop.index }}">
                     <strong>{{ step.has_title[0] }}</strong>
-                    <!-- Add delete step button -->
+                    <!-- Add delete step button Rishwanth-->
                     <form action="{{ url_for('delete_step') }}" method="post" style="display:inline;">
                         <input type="hidden" name="procedure_title" value="{{ procedure.has_title[0] }}">
                         <input type="hidden" name="step_title" value="{{ step.has_title[0] }}">
                         <button type="submit" class="btn btn-danger btn-sm">🗑️ Delete Step</button>
                     </form>
 
-                    <!-- Images Section -->
+                    <!-- Images Section Rishwanth-->
                     {% if step.has_image %}
                         <h4>Images:</h4>
                         <ul>
@@ -109,7 +112,7 @@
             {% endfor %}
         </ol>
 
-        <!-- Add new step form -->
+        <!-- Add new step form -Rishwanth-->
         <form action="{{ url_for('add_step') }}" method="post">
             <input type="hidden" name="procedure_title" value="{{ procedure.has_title[0] }}">
             <div class="form-group">

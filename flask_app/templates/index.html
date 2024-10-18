@@ -1,3 +1,6 @@
+ <!-- student 1 : Michael Hii Rong Mee (23237074)
+ student 2 : Rishwanth Katherapalle (23463452) -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +12,7 @@
     <!-- Link to custom stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='indexstyle.css') }}">
     <script>
+        //Michael worked on the search procedure function
         function searchProcedures() {
             const input = document.getElementById('searchInput').value.toLowerCase();
             const tableRows = document.querySelectorAll('#procedureTable tbody tr');
@@ -23,7 +27,7 @@
                 }
             });
         }
-
+        //Rishwanth worked on the filter by letter
         function filterByLetter(letter) {
             const tableRows = document.querySelectorAll('#procedureTable tbody tr');
             tableRows.forEach(row => {
@@ -35,7 +39,7 @@
                 }
             });
         }
-
+        //Michael worked on the filter by procedure count
         function filterByProcedureCount(range) {
             const tableRows = document.querySelectorAll('#procedureTable tbody tr');
             tableRows.forEach(row => {
@@ -55,6 +59,7 @@
             });
         }
 
+        // Michael made addStep
         function addStep() {
             const stepContainer = document.getElementById('stepContainer');
             const newInput = document.createElement('input');
@@ -65,6 +70,7 @@
             stepContainer.appendChild(newInput);
         }
 
+        // Michael made addTool
         function addTool() {
             const toolContainer = document.getElementById('toolContainer');
             const newInput = document.createElement('input');
@@ -75,6 +81,7 @@
             toolContainer.appendChild(newInput);
         }
 
+        // Michael made alertItemsWithoutProcedures
         function alertItemsWithoutProcedures() {
         const tableRows = document.querySelectorAll('#procedureTable tbody tr');
 
@@ -111,8 +118,8 @@
     <div class="container">
         <h1 class="mt-5">Items in the Ontology</h1>
 
-        <!-- Add this above the table -->
         <div class="container mb-5">
+            <!--Michael worked on adding procedure to item-->
             <h3>Add a Procedure to an Item</h3>
             <form action="{{ url_for('add_procedure') }}" method="post">
                 <div class="form-group">
@@ -147,7 +154,8 @@
                 <button type="submit" class="btn btn-primary">Add Procedure</button>
             </form>
         </div>
-
+        
+        <!--Rishwanth worked on alphabet filter-->
         <!-- Alphabet Filter -->
         <div class="mb-3">
             <strong>Filter by Alphabet:</strong>
@@ -159,6 +167,7 @@
             </div>
         </div>
 
+        <!--Michael worked on number of procedure filter-->
         <div class="mb-3">
             <strong>Filter by Number of Procedures:</strong>
             <div class="btn-group">
@@ -168,14 +177,14 @@
             </div>
         </div>
 
-        <!-- Search Bar for Filtering Procedures -->
+
+        <!-- Search bar for filtering Procedures  - Michael-->
         <div class="mb-3">
             <input type="text" id="searchInput" class="form-control" placeholder="Search Procedures..." onkeyup="searchProcedures()">
         </div>
 
         
-
-        <!-- Table to Display Items and Related Information -->
+        <!-- Table to display Items and related Information - Michael-->
         <table class="table" id="procedureTable">
             <thead>
                 <tr>
@@ -195,7 +204,7 @@
                                 <a href="{{ url_for('procedure_detail', procedure_title=procedure.has_title[0]) }}">
                                     {{ procedure.has_title[0] }}
                                 </a>
-                                <!-- Add a button to remove the procedure, wrapped in a div for consistent alignment -->
+                                <!-- Add a button to remove the procedure - Michael -->
                                 <form action="{{ url_for('remove_procedure') }}" method="post" style="display:inline;">
                                     <input type="hidden" name="item_name" value="{{ item.name }}">
                                     <input type="hidden" name="procedure_title" value="{{ procedure.has_title[0] }}">
@@ -218,7 +227,7 @@
                     </td>
                 </tr>
 
-                <!-- Display any errors associated with the item -->
+                <!-- Display any errors associated with the item - Michael -->
                 {% if item.errors %}
                 <tr>
                     <td colspan="3">

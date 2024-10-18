@@ -1,3 +1,6 @@
+# student 1 : Michael Hii Rong Mee (23237074)
+# student 2 : Rishwanth Katherapalle (23463452)
+
 from flask import Flask, render_template, abort, redirect, request, url_for
 from owlready2 import *
 
@@ -6,6 +9,8 @@ onto = get_ontology("repair_ontology.owl").load()
 
 app = Flask(__name__)
 
+
+# Michael made route to index
 @app.route('/')
 def index():
     items_info = []
@@ -25,6 +30,7 @@ def index():
             items_info.append(item_data)
     return render_template('index.html', items=items_info)
 
+#Michael made route to procedure details
 @app.route('/procedure/<string:procedure_title>')
 def procedure_detail(procedure_title):
     procedures = [proc for proc in onto.Procedure.instances() if procedure_title in proc.has_title]
@@ -33,6 +39,7 @@ def procedure_detail(procedure_title):
     procedure = procedures[0]
     return render_template('procedure_detail.html', procedure=procedure)
 
+#Michael and Rishwanth made route to add procedures to ontology
 @app.route('/add_procedure', methods=['POST'])
 def add_procedure():
     item_name = request.form.get('item_name')
@@ -81,7 +88,7 @@ def add_procedure():
     onto.save(file="repair_ontology.owl", format="rdfxml")
     return redirect(url_for('index'))
 
-
+#Michael made route for remove_procedure
 @app.route('/remove_procedure', methods=['POST'])
 def remove_procedure():
     item_name = request.form.get('item_name')
@@ -96,7 +103,7 @@ def remove_procedure():
 
     return redirect(url_for('index'))
 
-# Route for deleting a tool from a procedure
+# Rishwanth made route for deleting a tool from a procedure 
 @app.route('/delete_tool', methods=['POST'])
 def delete_tool():
     procedure_title = request.form.get('procedure_title')
@@ -111,7 +118,7 @@ def delete_tool():
 
     return redirect(url_for('procedure_detail', procedure_title=procedure_title))
 
-# Route for adding a tool to a procedure
+# Rishwanth made route for adding a tool to a procedure
 @app.route('/add_tool', methods=['POST'])
 def add_tool():
     procedure_title = request.form.get('procedure_title')
@@ -127,7 +134,7 @@ def add_tool():
 
     return redirect(url_for('procedure_detail', procedure_title=procedure_title))
 
-# Route for deleting a step from a procedure
+# Rishwanth made route for deleting a step from a procedure
 @app.route('/delete_step', methods=['POST'])
 def delete_step():
     procedure_title = request.form.get('procedure_title')
@@ -142,7 +149,7 @@ def delete_step():
 
     return redirect(url_for('procedure_detail', procedure_title=procedure_title))
 
-# Route for adding a step to a procedure
+# Rishwanth made route for adding a step to a procedure
 @app.route('/add_step', methods=['POST'])
 def add_step():
     procedure_title = request.form.get('procedure_title')
@@ -167,7 +174,7 @@ def add_step():
 
     return redirect(url_for('procedure_detail', procedure_title=procedure_title))
 
-# Route for deleting an image from a step
+# Rishwanth made route for deleting an image from a step
 @app.route('/delete_image', methods=['POST'])
 def delete_image():
     procedure_title = request.form.get('procedure_title')
@@ -182,8 +189,6 @@ def delete_image():
         onto.save(file="repair_ontology.owl", format="rdfxml")
 
     return redirect(url_for('procedure_detail', procedure_title=procedure_title))
-
-
 
 
 def sanitize_uri(text):

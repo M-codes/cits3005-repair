@@ -1,3 +1,7 @@
+/* student 1 : Michael Hii Rong Mee (23237074)
+student 2 : Rishwanth Katherapalle (23463452)  */
+
+/* Rishwanth worked on this*/
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -27,7 +31,7 @@ h1{
 
 .container {
     max-width: 800px;
-    margin-top: 50px; /* Space below the fixed navigation to avoid overlap */
+    margin-top: 50px; 
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
